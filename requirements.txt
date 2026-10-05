@@ -1,6 +1,4 @@
-git init
-git add .
-git commit -m "Initial commit for GPP AI API"
-git branch -M main
-git remote add origin https://github.com/your-username/gpp-ai-service.git
-git push -u origin main
+fastapi==0.110.0
+uvicorn==0.28.0
+pydantic==2.6.4
+numpy==1.26.4
