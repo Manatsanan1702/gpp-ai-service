@@ -1,0 +1,48 @@
+{\rtf1\ansi\ansicpg874\cocoartf2870
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 from fastapi import FastAPI\
+from pydantic import BaseModel\
+import numpy as np\
+\
+app = FastAPI(title="GPP Temperature Prediction AI API")\
+\
+class SensorInput(BaseModel):\
+    temp: float\
+    hum: float\
+    outdoor_temp: float = None\
+    outdoor_hum: float = None\
+\
+@app.get("/")\
+def home():\
+    return \{"status": "online", "message": "GPP AI Prediction API is running 24/7"\}\
+\
+@app.post("/predict")\
+def predict_temperature(data: SensorInput):\
+    current_temp = data.temp\
+    current_hum = data.hum\
+    \
+    # \uc0\u3588 \u3635 \u3609 \u3623 \u3603 \u3588 \u3634 \u3604 \u3585 \u3634 \u3619 \u3603 \u3660 \u3629 \u3640 \u3603 \u3627 \u3616 \u3641 \u3617 \u3636 \u3623 \u3636 \u3585 \u3620 \u3605  (30\'b0C)\
+    predict_mins = 0\
+    predict_text = "\uc0\u3649 \u3609 \u3623 \u3650 \u3609 \u3657 \u3617 \u3629 \u3640 \u3603 \u3627 \u3616 \u3641 \u3617 \u3636 : \u3611 \u3585 \u3605 \u3636 \u3588 \u3591 \u3607 \u3637 \u3656 "\
+    \
+    if current_temp >= 30.0:\
+        predict_mins = 0\
+        predict_text = "\uc0\u55357 \u57000  \u3586 \u3603 \u3632 \u3609 \u3637 \u3657 \u3629 \u3640 \u3603 \u3627 \u3616 \u3641 \u3617 \u3636 \u3648 \u3585 \u3636 \u3609  30\'b0C \u3649 \u3621 \u3657 \u3623 !"\
+    elif current_temp >= 26.0:\
+        # \uc0\u3588 \u3635 \u3609 \u3623 \u3603 \u3611 \u3619 \u3632 \u3617 \u3634 \u3603 \u3585 \u3634 \u3619 \u3648 \u3623 \u3621 \u3634 \u3607 \u3637 \u3656 \u3629 \u3640 \u3603 \u3627 \u3616 \u3641 \u3617 \u3636 \u3592 \u3632 \u3606 \u3638 \u3591  30\'b0C\
+        rate = 0.05  # \uc0\u3629 \u3633 \u3605 \u3619 \u3634 \u3585 \u3634 \u3619 \u3648 \u3614 \u3636 \u3656 \u3617 \u3629 \u3640 \u3603 \u3627 \u3616 \u3641 \u3617 \u3636 \u3650 \u3604 \u3618 \u3611 \u3619 \u3632 \u3617 \u3634 \u3603  (\'b0C/\u3609 \u3634 \u3607 \u3637 )\
+        predict_mins = int((30.0 - current_temp) / rate)\
+        predict_text = f"\uc0\u3588 \u3634 \u3604 \u3585 \u3634 \u3619 \u3603 \u3660 \u3629 \u3640 \u3603 \u3627 \u3616 \u3641 \u3617 \u3636 \u3649 \u3605 \u3632  30\'b0C \u3651 \u3609 \u3629 \u3637 \u3585 \u3611 \u3619 \u3632 \u3617 \u3634 \u3603  \{predict_mins\} \u3609 \u3634 \u3607 \u3637 "\
+    \
+    return \{\
+        "status": "success",\
+        "current_temp": current_temp,\
+        "current_hum": current_hum,\
+        "predictMins": predict_mins,\
+        "predictMinsText": predict_text\
+    \}}
